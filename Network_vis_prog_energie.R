@@ -114,7 +114,9 @@ V(network_nrj)$color<- colrs[V(network_nrj)$type.collaborateur+1]
 colrs_links<- c("darkgrey", "darkgreen", "goldenrod", "magenta")
 E(network_nrj)$color<- colrs_links[E(network_nrj)$type]
 E(network_nrj)$width<- 2
+#V(network_nrj)$size<- 5
 
+V(network_nrj)$size<-8+ (V(network_nrj)$budget.projet/80000)
 
 setwd(output_path)
 pdf("Network_nrj.pdf")
