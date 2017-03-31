@@ -116,41 +116,134 @@ E(network_nrj)$color<- colrs_links[E(network_nrj)$type]
 E(network_nrj)$width<- 2
 #V(network_nrj)$size<- 5
 
-V(network_nrj)$size<-8+ (V(network_nrj)$budget.projet/80000)
+V(network_nrj)$size<-15+ (V(network_nrj)$budget.projet/80000)
 
 setwd(output_path)
 pdf("Network_nrj.pdf")
 
-l<- layout_nicely(network_nrj)
+        l<- layout_nicely(network_nrj)
+        
+        plot(network_nrj, 
+             vertex.shape="sphere",
+             vertex.label.cex=0.6,
+             vertex.label.color="black", 
+             layout=l,
+             main="Programme énergie")
+        
+        legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
+                col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
+        
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+        
+        l<- layout_with_dh(network_nrj)
+        
+        plot(network_nrj, 
+             vertex.shape="sphere",
+             vertex.label.cex=0.6,
+             vertex.label.color="black", 
+             layout=l, 
+             main="Programme énergie")
+        legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
+                col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
+        
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
 
-plot(network_nrj, 
-     vertex.shape="sphere",
-     vertex.label.cex=0.6,
-     vertex.label.color="black", 
-     layout=l,
-     main="Programme énergie")
+dev.off()
 
-legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
-        col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
+pdf("Visualisation_3programmes_NRJ_31_mars.pdf")
 
-legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Organisme subventionnaire", "Consultants"), pch=21,
-       col="black", pt.bg=colrs[c(1,2,6,3,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
-
-l<- layout_with_dh(network_nrj)
-
-plot(network_nrj, 
-     vertex.shape="sphere",
-     vertex.label.cex=0.6,
-     vertex.label.color="black", 
-     layout=l, 
-     main="Programme énergie")
-legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
-        col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
-
-legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Organisme subventionnaire", "Consultants"), pch=21,
-       col="black", pt.bg=colrs[c(1,2,6,3,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+        # PAGE 1 - 1 GRAPHIQUE
+        plot(network_nrj, 
+             vertex.shape="sphere",
+             vertex.label.cex=0.6,
+             vertex.label.color="black", 
+             layout=l, 
+             main="Programme énergie")
+        legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
+                col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
+        
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
 
 
+
+# Plot the links separately:
+
+        ## Collaboration seulement
+        network_nrj_coll <- network_nrj - E(network_nrj)[E(network_nrj)$type==2] 
+        network_nrj_coll<- network_nrj_coll - E(network_nrj_coll)[E(network_nrj_coll)$type==3] 
+        network_nrj_coll<- network_nrj_coll - E(network_nrj_coll)[E(network_nrj_coll)$type==4] 
+        
+        # Autres liens
+          
+        network_nrj_autres  <- network_nrj - E(network_nrj )[E(network_nrj )$type==1] 
+        
+        
+        
+        
+        par(mfrow=c(1,2))
+        ###1
+        plot(network_nrj_coll,  main="Liens de collaboration", layout=l,
+             vertex.shape="sphere",
+             vertex.label=V(network_nrj_coll)$label,
+             vertex.label.cex=0.6,
+             vertex.label.color="black")
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+        
+        
+        
+        ###2
+        E(network_nrj_autres)$width <- 1+E(network_nrj_autres)$weight/50000
+        
+        plot(network_nrj_autres , main="Autres liens", layout=l, 
+             vertex.shape="sphere",
+             vertex.label=V(network_nrj_autres)$label,
+             vertex.label.cex=0.6,
+             
+             vertex.label.color="black")
+        
+        legend (x=0, y=-1.1, c( "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
+                col=colrs_links[c(3,2,4)], ncol=1, pt.cex=1.2, cex=0.5, bty="n")
+        
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+
+
+dev.off()
+
+### DEUX JPG pour faire un gif
+
+pdf("Liens_collabo_3pr.pdf")
+        plot(network_nrj_coll,  main="Liens de collaboration", layout=l,
+             vertex.shape="sphere",
+             vertex.label=V(network_nrj_coll)$label,
+             vertex.label.cex=0.6,
+             vertex.label.color="black")
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+
+
+dev.off()
+
+pdf("Liens_autres_3pr.pdf")
+
+        E(network_nrj_autres)$width <- 1+E(network_nrj_autres)$weight/50000
+        
+        plot(network_nrj_autres , main="Autres liens", layout=l, 
+             vertex.shape="sphere",
+             vertex.label=V(network_nrj_autres)$label,
+             vertex.label.cex=0.6,
+             
+             vertex.label.color="black")
+        
+        legend (x=0, y=-1.1, c( "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
+                col=colrs_links[c(3,2,4)], ncol=1, pt.cex=1.2, cex=0.5, bty="n")
+        
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
 dev.off()
 
 #### Tests de layout
@@ -170,10 +263,10 @@ for (layout in layouts) {
              vertex.label.cex=0.6,
              vertex.label.color="black", layout=l, main=layout)
         legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
-                col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
+                col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.5, bty="n")
         
-        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Organisme subventionnaire", "Consultants"), pch=21,
-               col="black", pt.bg=colrs[c(1,2,6,3,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+        legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+               col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
 }
 
 dev.off()
