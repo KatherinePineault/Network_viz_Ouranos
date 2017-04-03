@@ -105,10 +105,12 @@ nodes<- read.csv("liens_prog_energie_NODES.csv", sep=";", header=T, as.is=T)
 links<- read.csv("liens_prog_energie_EDGES.csv", sep=";", header=T, as.is=T)
 
 
+### READ DOCUMENTATION : http://igraph.org/r/doc/layout_with_fr.html
+
 network_nrj<- graph_from_data_frame(d=links, vertices=nodes, directed=F)
 
 #colrs<- c("steel blue", "orange", "red", "purple", "grey", "green", "blue", "yellow", "magenta")
-colrs <- rainbow(9, alpha=.5)
+colrs <- rainbow(10, alpha=.5)
 V(network_nrj)$color<- colrs[V(network_nrj)$type.collaborateur+1]
 
 colrs_links<- c("darkgrey", "darkgreen", "goldenrod", "magenta")
@@ -116,10 +118,10 @@ E(network_nrj)$color<- colrs_links[E(network_nrj)$type]
 E(network_nrj)$width<- 2
 #V(network_nrj)$size<- 5
 
-V(network_nrj)$size<-15+ (V(network_nrj)$budget.projet/80000)
+V(network_nrj)$size<-15+ (V(network_nrj)$budget.projet/120000)
 
 setwd(output_path)
-pdf("Network_nrj.pdf")
+pdf("Network_complet_nrj.pdf")
 
         l<- layout_nicely(network_nrj)
         
@@ -152,7 +154,7 @@ pdf("Network_nrj.pdf")
 
 dev.off()
 
-pdf("Visualisation_3programmes_NRJ_31_mars.pdf")
+pdf("Visualisation_programmeNRJ.pdf")
 
         # PAGE 1 - 1 GRAPHIQUE
         plot(network_nrj, 
@@ -216,7 +218,7 @@ dev.off()
 
 ### DEUX JPG pour faire un gif
 
-pdf("Liens_collabo_3pr.pdf")
+pdf("Liens_collabo_NRJr.pdf")
         plot(network_nrj_coll,  main="Liens de collaboration", layout=l,
              vertex.shape="sphere",
              vertex.label=V(network_nrj_coll)$label,
@@ -228,7 +230,7 @@ pdf("Liens_collabo_3pr.pdf")
 
 dev.off()
 
-pdf("Liens_autres_3pr.pdf")
+pdf("Liens_autres_NRJ.pdf")
 
         E(network_nrj_autres)$width <- 1+E(network_nrj_autres)$weight/50000
         
@@ -248,7 +250,7 @@ dev.off()
 
 #### Tests de layout
 
-pdf("Tests_de_layout_PROGNRJ_3Projets.Pdf")
+pdf("Tests_de_layout_PROGNRJ_complet.Pdf")
 
 layouts <- grep("^layout_", ls("package:igraph"), value=TRUE)[-1]
 # Remove layouts that do not apply to our graph.
