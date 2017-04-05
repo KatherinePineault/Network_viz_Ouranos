@@ -104,21 +104,29 @@ setwd(data_path)
 nodes<- read.csv("liens_prog_energie_NODES.csv", sep=";", header=T, as.is=T)
 links<- read.csv("liens_prog_energie_EDGES.csv", sep=";", header=T, as.is=T)
 
+links2<- read.csv("liens_prog_energie_moins_EDGES.csv", sep=";", header=T, as.is=T)
 
 ### READ DOCUMENTATION : http://igraph.org/r/doc/layout_with_fr.html
 
 network_nrj<- graph_from_data_frame(d=links, vertices=nodes, directed=F)
+        network_nrj2<- graph_from_data_frame(d=links2, vertices=nodes, directed=F)
 
 #colrs<- c("steel blue", "orange", "red", "purple", "grey", "green", "blue", "yellow", "magenta")
 colrs <- rainbow(10, alpha=.5)
 V(network_nrj)$color<- colrs[V(network_nrj)$type.collaborateur+1]
+        V(network_nrj2)$color<- colrs[V(network_nrj2)$type.collaborateur+1]
 
 colrs_links<- c("darkgrey", "darkgreen", "goldenrod", "magenta")
 E(network_nrj)$color<- colrs_links[E(network_nrj)$type]
 E(network_nrj)$width<- 2
+        E(network_nrj2)$color<- colrs_links[E(network_nrj2)$type]
+        E(network_nrj2)$width<- 2
+
+
 #V(network_nrj)$size<- 5
 
 V(network_nrj)$size<-15+ (V(network_nrj)$budget.projet/120000)
+        V(network_nrj2)$size<-15+ (V(network_nrj2)$budget.projet/120000)
 
 setwd(output_path)
 pdf("Network_complet_nrj.pdf")
@@ -154,13 +162,18 @@ pdf("Network_complet_nrj.pdf")
 
 dev.off()
 
-pdf("Visualisation_programmeNRJ.pdf")
+pdf("Visualisation_programmeNRJ_4avril.pdf")
 
         # PAGE 1 - 1 GRAPHIQUE
-        plot(network_nrj, 
+        
+        tk_plot<- tkplot(network_nrj)
+        l<- tkplot.getcoords(tk_plot)
+
+        plot(network_nrj2, 
              vertex.shape="sphere",
              vertex.label.cex=0.6,
              vertex.label.color="black", 
+             vertex.label.dist=0.5,
              layout=l, 
              main="Programme énergie")
         legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
@@ -174,13 +187,13 @@ pdf("Visualisation_programmeNRJ.pdf")
 # Plot the links separately:
 
         ## Collaboration seulement
-        network_nrj_coll <- network_nrj - E(network_nrj)[E(network_nrj)$type==2] 
+        network_nrj_coll <- network_nrj2 - E(network_nrj2)[E(network_nrj2)$type==2] 
         network_nrj_coll<- network_nrj_coll - E(network_nrj_coll)[E(network_nrj_coll)$type==3] 
         network_nrj_coll<- network_nrj_coll - E(network_nrj_coll)[E(network_nrj_coll)$type==4] 
         
         # Autres liens
           
-        network_nrj_autres  <- network_nrj - E(network_nrj )[E(network_nrj )$type==1] 
+        network_nrj_autres  <- network_nrj2 - E(network_nrj2 )[E(network_nrj2 )$type==1] 
         
         
         
@@ -218,7 +231,7 @@ dev.off()
 
 ### DEUX JPG pour faire un gif
 
-pdf("Liens_collabo_NRJr.pdf")
+pdf("Liens_collabo_NRJ_4avril.pdf")
         plot(network_nrj_coll,  main="Liens de collaboration", layout=l,
              vertex.shape="sphere",
              vertex.label=V(network_nrj_coll)$label,
@@ -230,7 +243,7 @@ pdf("Liens_collabo_NRJr.pdf")
 
 dev.off()
 
-pdf("Liens_autres_NRJ.pdf")
+pdf("Liens_autres_NRJ_4avril.pdf")
 
         E(network_nrj_autres)$width <- 1+E(network_nrj_autres)$weight/50000
         
@@ -270,5 +283,53 @@ for (layout in layouts) {
         legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
                col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
 }
+
+dev.off()
+
+
+### Test pour illustrer les liens qui proviennent des membres
+
+# setwd(output_path)
+# 
+# pdf("Membres_dans_programme_Energie.pdf")
+# inc.edges<- incident_edges(network_nrj2, V(network_nrj2)[membre=="1"], mode="all")
+# 
+# ecol<- rep("gray80", ecount(network_nrj2))
+# ecol[inc.edges]<- "orange"
+# vcol<- rep("gray80", vcount(network_nrj2))
+# vcol[V(network_nrj2)$membre=="1"]<- "red"
+# plot(network_nrj2, vertex.shape="sphere", 
+#      vertex.color=vcol, edge.color=ecol, 
+#      vertex.label.cex=0.6,
+#      vertex.label.color="black",
+#      layout=l, 
+#      main="Les membres d'Ouranos dans le programme Énergie")
+# 
+# dev.off()
+
+
+
+setwd(output_path)
+
+pdf("Visualisation_ProgScientifique_NRJ_4avril.pdf")
+plot(network_nrj2, 
+     vertex.shape="sphere",
+     vertex.label.cex=0.6,
+     vertex.label.color="black", 
+     vertex.label.dist=0.5,
+     layout=l, 
+     main="Programme énergie")
+legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
+        col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
+
+legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
+       col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+
+
+
+
+
+
+
 
 dev.off()
