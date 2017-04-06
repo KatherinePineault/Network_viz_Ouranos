@@ -112,7 +112,7 @@ network_nrj<- graph_from_data_frame(d=links, vertices=nodes, directed=F)
         network_nrj2<- graph_from_data_frame(d=links2, vertices=nodes, directed=F)
 
 #colrs<- c("steel blue", "orange", "red", "purple", "grey", "green", "blue", "yellow", "magenta")
-colrs <- rainbow(10, alpha=.5)
+colrs <- rainbow(10, alpha=1)
 V(network_nrj)$color<- colrs[V(network_nrj)$type.collaborateur+1]
         V(network_nrj2)$color<- colrs[V(network_nrj2)$type.collaborateur+1]
 
@@ -166,8 +166,8 @@ pdf("Visualisation_programmeNRJ_4avril.pdf")
 
         # PAGE 1 - 1 GRAPHIQUE
         
-        tk_plot<- tkplot(network_nrj)
-        l<- tkplot.getcoords(tk_plot)
+        # tk_plot<- tkplot(network_nrj)
+        # l<- tkplot.getcoords(tk_plot)
 
         plot(network_nrj2, 
              vertex.shape="sphere",
@@ -307,29 +307,40 @@ dev.off()
 # 
 # dev.off()
 
-
+setwd(data_path)
+load("Coordonnees_prog_NRJ.Rda")
 
 setwd(output_path)
 
-pdf("Visualisation_ProgScientifique_NRJ_4avril.pdf")
+V(network_nrj2)$shape<- ifelse(V(network_nrj2)$membre==1, "circle", "sphere")
+#V(network_nrj2)$shape<- ifelse(V(network_nrj2)$type.collaborateur==0, "square", V(network_nrj2)$shape)
+
+V(network_nrj2)$frame.color <- black
+
+# Remplacer les noms qui vont sur deux lignes
+V(network_nrj2)$label[10]<- "Base de données\ninteractive"
+
+pdf("Visualisation_NRJ_4avril.pdf")
 plot(network_nrj2, 
-     vertex.shape="sphere",
+     vertex.shape=V(network_nrj2)$shape,
+     #vertex.shape="sphere",
+     #vertex.shape="csquare",
+    
      vertex.label.cex=0.6,
      vertex.label.color="black", 
-     vertex.label.dist=0.5,
      layout=l, 
-     main="Programme énergie")
+     main="Programme énergie: Liens et collaborations\n 2014-2016")
+
 legend (x=0, y=-1.1, c("Collaboration", "Contribution en nature ou financière", "Appui", "Suivi"), pch="-",
-        col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.8, bty="n")
+        col=colrs_links[c(1,3,2,4)], ncol=1, pt.cex=1.5, cex=0.7, bty="n")
 
-legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités",  "Secteur de l'énergie", "Gouvernement provincial", "Gouvernement fédéral", "Organisme subventionnaire", "Consultants"), pch=21,
-       col="black", pt.bg=colrs[c(1,2,6,3,4,9,7)], ncol=1, pt.cex=1, cex=.5,bty="n")
+legend(x=-1.2, y=-1.1, c("Projets Ouranos", "Universités", "Secteur de l'énergie", "Gouvernement", "Organisme subventionnaire", "Consultants", "Autre"), pch=21,
+       col="black", pt.bg=colrs[c(1,2,6,4,9,7,10)], ncol=1, pt.cex=1, cex=.5,bty="n")
 
-
-
-
-
-
-
+text(x=1.1, y=-.4, "Note 1: Les collaborateurs qui sont\n membres sont représentés par des cercles\n et les non-membres, par des sphères.\n\nNote 2: La taille des projets \nreprésente la taille de leur budget total.", cex=0.5)
 
 dev.off()
+
+
+# 
+# tkid<- tkplot(network_nrj2, layout=l)
